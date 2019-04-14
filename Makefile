@@ -1,3 +1,8 @@
-run:
-	gcc main.c
-	./a.out
+.PHONY: run
+
+run: octrha
+	./octrha
+
+octrha: main.c
+	gcc -o octrha main.c
+
