@@ -77,7 +77,10 @@ void printMemory(cell memory[MEMSIZE]) {
 	}
 }
 
-char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
+// returns 0 if all went well
+// 1 - invalid instruction encountered
+// 2 - program should have ended
+int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	int ptr = 0;
 	int outptr = 0;
 
@@ -86,6 +89,9 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 
 	// used for swap
 	cell tmp = 0;
+
+	if (DEBUG) 
+		printf("INIT ptr: %d cell: %d r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
 
 	while (memory[ptr] != STOP) {
 		if (ptr > MEMSIZE) {
@@ -96,8 +102,7 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			printf("Invalid instruction %d at %x\n", memory[ptr], ptr);
 			return 1;
 		}
-		if (DEBUG) 
-			printf("ptr: %d cell: %d r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
+		
 
 		if (memory[ptr] == R0PP) { r0++; }
 		else if (memory[ptr] == R0MM) { r0--; }
@@ -135,16 +140,22 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 		} else if (memory[ptr] == SWAP0) {
 			tmp = r0;
 			// watch out! random memory here!
-			r0 = memory[ptr+1];
-			memory[ptr+1] = tmp;
+			ptr++;
+			r0 = memory[memory[ptr]];
+			memory[memory[ptr]] = tmp;
 		} else if (memory[ptr] == SWAP1) {
 			tmp = r1;
 			// watch out! random memory here!
-			r1 = memory[ptr+1];
-			memory[ptr+1] = tmp;
+			ptr++;
+			r1 = memory[memory[ptr]];
+			memory[memory[ptr]] = tmp;
 		}
 		ptr++;
+		if (DEBUG) 
+			printf("ptr: %d cell: %d r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
 	}
+
+	return 0;
 }
 
 
@@ -153,6 +164,9 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 // 2 - couldn't load expected output
 // >= 10: output differed from index code - 10
 int test(char *name, cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
+
+	if (DEBUG) 
+		printf("Testing '%s'\n", name);
 
 	int nloaded = loadProg(memory, name);
 	if (nloaded == -1) {
@@ -191,7 +205,7 @@ int main(int argc, char *argv[]) {
 	cell memory[MEMSIZE];
 	cell output[OUTPUTSIZE];
 
-	char *tests[NUMBER_TESTS] = {"2", "jump"};
+	char *tests[NUMBER_TESTS] = {"2", "jump", "swap"};
 
 	for (int i = 0; i < NUMBER_TESTS; i++) {
 		clearMemory(memory);

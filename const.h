@@ -24,7 +24,7 @@
 
 #define INSTRUCTION_END SWAP1
 
-#define NUMBER_TESTS 2
+#define NUMBER_TESTS 3
 
 #define DEBUG 1
 
