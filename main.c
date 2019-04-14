@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
 	clearMemory(memory);
 	clearOutput(output);
 
-	char *tests[NUMBER_TESTS] = {"2", "jump", "swap"};
+	char *tests[NUMBER_TESTS] = {"2", "jump", "swap", "load"};
 
 	char failed = 0;
 	for (int i = 0; i < NUMBER_TESTS; i++) {

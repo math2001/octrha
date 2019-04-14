@@ -1,0 +1,5 @@
+load A into R0
+load B into R1
+print r0 
+swap r0 and r1
+print r0
