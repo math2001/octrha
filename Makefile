@@ -3,6 +3,6 @@
 run: octrha
 	./octrha
 
-octrha: main.c
+octrha: *.h *.c
 	gcc -o octrha main.c
 

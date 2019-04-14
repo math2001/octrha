@@ -38,6 +38,16 @@ The sum is going to end up in r1.
 - if r0 != 0, jump back to r1++
 - swap r1 with <sum> (in the frame)
 
+Now some clean up:
+
+Restore r0 and r1, and jump back to the location:
+
+- load jump location into r1
+- swap r1 with the address right after the jump
+- swap r0 with <tmpr0>
+- swap r1 with <tmpr1>
+- jump back (the address has been overwritten by the second instruction)
+
 The frame is the last line, in this format:
 
 <return address> <sum> <a> <b> <tmpr0> <tmpr1>... more bytes
@@ -46,3 +56,5 @@ where tmprN is where r0 and r1 will be cached before the actual function runs
 (by the wrapper) and then restored from once the function is done.
 
 
+
+0a 44 0b 45 0a 42 0b 43 03 02 08 28 0b 41 0b 40

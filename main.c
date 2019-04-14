@@ -90,9 +90,6 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	// used for swap
 	cell tmp = 0;
 
-	if (DEBUG) 
-		printf("INIT ptr: %d cell: %d r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
-
 	while (memory[ptr] != STOP) {
 		if (ptr > MEMSIZE) {
 			printf("Program should have ended. No more memory to read from\n");
@@ -159,12 +156,12 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			r1 = memory[ptr];
 		}
 		else {
-			printf("Invalid instruction %d at %x\n", memory[ptr], ptr);
+			printf("Invalid instruction 0x%x at 0x%x\n", memory[ptr], ptr);
 			return 1;
 		}
 		ptr++;
 		if (DEBUG) 
-			printf("ptr: %d cell: %d r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
+			printf("ptr: 0x%x cell: 0x%x r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
 	}
 
 	return 0;
@@ -234,7 +231,7 @@ int main(int argc, char *argv[]) {
 	clearMemory(memory);
 	clearOutput(output);
 
-	char *tests[NUMBER_TESTS] = {"2", "jump", "swap", "load"};
+	char *tests[NUMBER_TESTS] = {"2", "jump", "swap", "load", "addition"};
 
 	char failed = 0;
 	for (int i = 0; i < NUMBER_TESTS; i++) {
