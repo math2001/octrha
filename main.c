@@ -31,16 +31,15 @@ void printOutput(cell output[OUTPUTSIZE]) {
 int loadProg(cell memory[MEMSIZE], char *name) {
 
 	// +1 for the null terminator
-	char *path = malloc(sizeof(char) * MAX_PATH_LENGTH+1);
+	char path[MAX_PATH_LENGTH + 1];
 
-	snprintf(path, MAX_PATH_LENGTH+1, "./programs/%s.prg", name);
+	snprintf(path, MAX_PATH_LENGTH+1, "./tests/%s.prg", name);
 
 	FILE* fp = fopen(path, "r");
 	if (!fp) {
 		printf("Failure to open file '%s'\n", path);
 		return -1;
 	}
-	free(path);
 
 	// load instructions (numbers separtated by spaces/newlines).
 
@@ -74,14 +73,15 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 
 	// used for swap
 	cell tmp = 0;
-	printf("%d\n", memory[4] == 5);
 
 	while (memory[ptr] != C_STOP) {
 		if (memory[ptr] > INSTRUCTION_END) {
 			printf("Invalid instruction %d at %x\n", memory[ptr], ptr);
 			return 1;
 		}
-		printf("ptr: %d cell: %d r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
+		if (DEBUG) 
+			printf("ptr: %d cell: %d r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
+
 		if (memory[ptr] == R0PP) { r0++; }
 		else if (memory[ptr] == R0MM) { r0--; }
 		else if (memory[ptr] == R1PP) { r1++; }
@@ -139,24 +139,65 @@ void printMemory(cell memory[MEMSIZE]) {
 	}
 }
 
+// returns 0 if it passes, otherwise a corresponding error code
+// 1 - couldn't load program
+// 2 - couldn't load expected output
+// >= 10: output differed from index code - 10
+int test(char *name, cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
+
+	int nloaded = loadProg(memory, name);
+	if (nloaded == -1) {
+		return 1;
+	}
+	run(memory, output);
+
+	// ensure that the output corresponds to the content in the corresponding
+	// file
+
+	// +1 for the null terminator
+	char path[255];
+
+	snprintf(path, MAX_PATH_LENGTH+1, "./tests/%s.out", name);
+
+	FILE* fp = fopen(path, "r");
+	if (!fp) {
+		return 2;
+	}
+
+	int c;
+	int i = 0;
+	while ((c = fgetc(fp)) != EOF) {
+		if (output[i] != c) {
+			fclose(fp);
+			return 10 + i;
+		}
+		i++;
+	}
+
+	fclose(fp);
+	return 0;
+}
+
 int main(int argc, char *argv[]) {
 	cell memory[MEMSIZE];
 	cell output[OUTPUTSIZE];
 
-	clearMemory(memory);
-	clearOutput(output);
+	char *tests[NUMBER_TESTS] = {"2"};
 
-	int n = loadProg(memory, "hello");
-	if (n == 0) {
-		printf("Failure to load program into memory\n");
-		return 0;
-	} else {
-		printf("Loaded %d byte(s) into memory\n", n);
+	for (int i = 0; i < NUMBER_TESTS; i++) {
+		clearMemory(memory);
+		clearOutput(output);
+		int err = test(tests[i], memory, output);
+		if (err == 1) {
+			printf("Failure to load program for test '%s'\n", tests[i]);
+		} else if (err == 2) {
+			printf("Failure to load expected output for test '%s'\n", tests[i]);
+		} else if (err >= 10) {
+			printf("Outputs differ from index %d\n", err - 10);
+			printf("Output from program:\n");
+			printOutput(output);
+		}
 	}
-
-	printMemory(memory);
-	run(memory, output);
-	printOutput(output);
 
 	return 0;
 }

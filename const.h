@@ -24,6 +24,10 @@
 
 #define INSTRUCTION_END SWAP1
 
+#define NUMBER_TESTS 1
+
+#define DEBUG 0
+
 typedef unsigned char cell;
 
 #endif
