@@ -1,3 +1,3 @@
 run:
-	gcc main.c debug.c
+	gcc main.c
 	./a.out
