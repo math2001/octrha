@@ -64,6 +64,19 @@ int loadProg(cell memory[MEMSIZE], char *name) {
 
 }
 
+// print memory array in rows of 16, in hexadecimal
+void printMemory(cell memory[MEMSIZE]) {
+	for (int i = 0; i < MEMSIZE; i++) {
+		if ((i % 16) == 0) {
+			printf("%3d| ", i);
+		}
+		printf("%2x ", memory[i]);
+		if ((i % 16) == 15) {
+			printf("\n");
+		}
+	}
+}
+
 char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	int ptr = 0;
 	int outptr = 0;
@@ -74,7 +87,11 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	// used for swap
 	cell tmp = 0;
 
-	while (memory[ptr] != C_STOP) {
+	while (memory[ptr] != STOP) {
+		if (ptr > MEMSIZE) {
+			printf("Program should have ended. No more memory to read from\n");
+			return 2;
+		}
 		if (memory[ptr] > INSTRUCTION_END) {
 			printf("Invalid instruction %d at %x\n", memory[ptr], ptr);
 			return 1;
@@ -86,31 +103,35 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 		else if (memory[ptr] == R0MM) { r0--; }
 		else if (memory[ptr] == R1PP) { r1++; }
 		else if (memory[ptr] == R1MM) { r1--; }
-		else if (memory[ptr] == PRINT) {
+		else if (memory[ptr] == WRITE) {
 			output[outptr] = r0;
 			outptr++;
-		} else if (memory[ptr] == PRINTA) {
+		} else if (memory[ptr] == PRINTASCII) {
 			// write the number at the end of the output, making sure it doesn't
 			// overflow
 			int written = snprintf(&output[outptr], OUTPUTSIZE - outptr, "%d", r0);
 			outptr += written;
+
+
+		// there is a -1 when we jump because the pointer is automatically
+		// increased every loop
 		} else if (memory[ptr] == JUMPEQ) {
 			// watch out! random memory here!
 			if (r0 == 0) {
-				ptr = memory[ptr+1];
+				ptr = memory[ptr+1] - 1;
 			} else {
 				ptr++;
 			}
 		} else if (memory[ptr] == JUMPNEQ) {
 			// watch out! random memory here!
 			if (r0 != 0) {
-				ptr = memory[ptr+1];
+				ptr = memory[ptr+1] - 1;
 			} else {
 				ptr++;
 			}
 		} else if (memory[ptr] == JUMP) {
 			// watch out! random memory here!
-			ptr = memory[ptr+1];
+			ptr = memory[ptr+1] - 1;
 		} else if (memory[ptr] == SWAP0) {
 			tmp = r0;
 			// watch out! random memory here!
@@ -126,18 +147,6 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	}
 }
 
-// print memory array in rows of 16, in hexadecimal
-void printMemory(cell memory[MEMSIZE]) {
-	for (int i = 0; i < MEMSIZE; i++) {
-		if ((i % 16) == 0) {
-			printf("%3d| ", i);
-		}
-		printf("%2x ", memory[i]);
-		if ((i % 16) == 15) {
-			printf("\n");
-		}
-	}
-}
 
 // returns 0 if it passes, otherwise a corresponding error code
 // 1 - couldn't load program
@@ -182,7 +191,7 @@ int main(int argc, char *argv[]) {
 	cell memory[MEMSIZE];
 	cell output[OUTPUTSIZE];
 
-	char *tests[NUMBER_TESTS] = {"2"};
+	char *tests[NUMBER_TESTS] = {"2", "jump"};
 
 	for (int i = 0; i < NUMBER_TESTS; i++) {
 		clearMemory(memory);
@@ -193,7 +202,7 @@ int main(int argc, char *argv[]) {
 		} else if (err == 2) {
 			printf("Failure to load expected output for test '%s'\n", tests[i]);
 		} else if (err >= 10) {
-			printf("Outputs differ from index %d\n", err - 10);
+			printf("Outputs differ from index %d for test '%s'\n", err - 10, tests[i]);
 			printf("Output from program:\n");
 			printOutput(output);
 		}
