@@ -1,0 +1,6 @@
+the first line just skips a bunch of r0++ and then print r0 (and ensure it's 0)
+
+At the end of each line, it jumps to the next one.
+
+The second line does a loop, counting down from the value stored 0x0f (the value
+it contains is 10), with a line break in between.

@@ -2,6 +2,9 @@ implement timeout on run (deadline)
 automatically load tests based on files in folder
 optimize how the program is represented in .prg (memory locations, instead of 0)
 improve jump test!
+test jumping out of bounds (not possible with current notation)
+modulo for addition/substraction?
+implement multiplication algorithm (integer)
 
 
 DONE use hexadecimal in .prg!!

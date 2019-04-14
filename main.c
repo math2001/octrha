@@ -224,6 +224,9 @@ int main(int argc, char *argv[]) {
 	cell memory[MEMSIZE];
 	cell output[OUTPUTSIZE];
 
+	clearMemory(memory);
+	clearOutput(output);
+
 	char *tests[NUMBER_TESTS] = {"2", "jump", "swap"};
 
 	char failed = 0;
