@@ -47,7 +47,7 @@ int loadProg(cell memory[MEMSIZE], char *name) {
 	char line[50];
 
 	while (fgets(line, 50, fp) != NULL) {
-		sscanf(line, "%hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd",
+		sscanf(line, "%hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx",
 			&memory[i+0], &memory[i+1], &memory[i+2], &memory[i+3],
 			&memory[i+4], &memory[i+5], &memory[i+6], &memory[i+7],
 			&memory[i+8], &memory[i+9], &memory[i+10], &memory[i+11],
@@ -227,11 +227,13 @@ int main(int argc, char *argv[]) {
 			printOutput(output);
 		}
 		if (err != 0) {
-			failed = 1;
+			failed++;
 		}
 	}
 	if (!failed) {
 		printf("All tests pass! You are awesome!\n");
+	} else {
+		printf("%d test(s) failed\n", failed);
 	}
 
 	return 0;
