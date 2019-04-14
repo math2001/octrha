@@ -1,3 +1,4 @@
 implement timeout on run
 automatically load tests based on files in folder
 optimize how the program is represented in .prg
+use hexadecimal in .prg!!

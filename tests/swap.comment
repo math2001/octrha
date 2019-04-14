@@ -1,0 +1,19 @@
+The program loads 2 different values in r0 and r1, and then swaps them.
+
+
+To swap r0 and r1, we do the following:
+
+
+swap r0 and *cell
+swap r1 and *cell
+swap r0 and *cell
+
+*23 (cell 23) is used as the cache
+
+An other way of saying it (which isn't exactly the equivalent, but represents
+the *intended* behaviour)
+
+*cell = r0
+r0 = r1
+r1 = *cell
+
