@@ -98,11 +98,6 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			printf("Program should have ended. No more memory to read from\n");
 			return 2;
 		}
-		if (memory[ptr] > INSTRUCTION_END) {
-			printf("Invalid instruction %d at %x\n", memory[ptr], ptr);
-			return 1;
-		}
-		
 
 		if (memory[ptr] == R0PP) { r0++; }
 		else if (memory[ptr] == R0MM) { r0--; }
@@ -141,6 +136,9 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			tmp = r0;
 			// watch out! random memory here!
 			ptr++;
+			// this is nested because the instruction is:
+			// swap <addr>. memory[ptr] is the address of the cell we should
+			// swap with!
 			r0 = memory[memory[ptr]];
 			memory[memory[ptr]] = tmp;
 		} else if (memory[ptr] == SWAP1) {
@@ -149,6 +147,13 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			ptr++;
 			r1 = memory[memory[ptr]];
 			memory[memory[ptr]] = tmp;
+		} else if (memory[ptr] == LINEBREAK) {
+			// just a debug feature to quickly insert a line break in the ouput
+			output[outptr] = '\n';
+			outptr++;
+		} else {
+			printf("Invalid instruction %d at %x\n", memory[ptr], ptr);
+			return 1;
 		}
 		ptr++;
 		if (DEBUG) 

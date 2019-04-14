@@ -22,7 +22,7 @@
 #define SWAP0 10
 #define SWAP1 11
 
-#define INSTRUCTION_END SWAP1
+#define LINEBREAK 99
 
 #define NUMBER_TESTS 3
 
