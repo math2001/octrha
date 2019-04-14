@@ -212,6 +212,7 @@ int main(int argc, char *argv[]) {
 
 	char *tests[NUMBER_TESTS] = {"2", "jump", "swap"};
 
+	char failed = 0;
 	for (int i = 0; i < NUMBER_TESTS; i++) {
 		clearMemory(memory);
 		clearOutput(output);
@@ -225,6 +226,12 @@ int main(int argc, char *argv[]) {
 			printf("Output from program:\n");
 			printOutput(output);
 		}
+		if (err != 0) {
+			failed = 1;
+		}
+	}
+	if (!failed) {
+		printf("All tests pass! You are awesome!\n")
 	}
 
 	return 0;
