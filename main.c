@@ -48,7 +48,6 @@ int loadProg(cell memory[MEMSIZE], char *name) {
 	char line[50];
 
 	while (fgets(line, 50, fp) != NULL) {
-		printf("'%s'\n", line);
 		sscanf(line, "%hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd %hhd",
 			&memory[i+0], &memory[i+1], &memory[i+2], &memory[i+3],
 			&memory[i+4], &memory[i+5], &memory[i+6], &memory[i+7],
@@ -70,29 +69,31 @@ char run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	int ptr = 0;
 	int outptr = 0;
 
-	// used as a cache when printing numbers in decimal
-	char repr[MAX_CELL_DECIMAL_REPR];
-
 	cell r0 = 0;
 	cell r1 = 0;
 
 	// used for swap
 	cell tmp = 0;
+	printf("%d\n", memory[4] == 5);
 
 	while (memory[ptr] != C_STOP) {
 		if (memory[ptr] > INSTRUCTION_END) {
 			printf("Invalid instruction %d at %x\n", memory[ptr], ptr);
 			return 1;
 		}
+		printf("ptr: %d cell: %d r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
 		if (memory[ptr] == R0PP) { r0++; }
 		else if (memory[ptr] == R0MM) { r0--; }
 		else if (memory[ptr] == R1PP) { r1++; }
 		else if (memory[ptr] == R1MM) { r1--; }
 		else if (memory[ptr] == PRINT) {
-			snprintf(repr, MAX_CELL_DECIMAL_REPR, "%d", memory[ptr]);
-		} else if (memory[ptr] == PRINTA) {
 			output[outptr] = r0;
 			outptr++;
+		} else if (memory[ptr] == PRINTA) {
+			// write the number at the end of the output, making sure it doesn't
+			// overflow
+			int written = snprintf(&output[outptr], OUTPUTSIZE - outptr, "%d", r0);
+			outptr += written;
 		} else if (memory[ptr] == JUMPEQ) {
 			// watch out! random memory here!
 			if (r0 == 0) {
