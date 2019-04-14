@@ -21,6 +21,8 @@
 #define JUMP       0x9
 #define SWAP0      0xA
 #define SWAP1      0xB
+#define LOAD0      0xC
+#define LOAD1      0xD
 
 #define LINEBREAK  0xFF
 

@@ -151,7 +151,14 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			// just a debug feature to quickly insert a line break in the ouput
 			output[outptr] = '\n';
 			outptr++;
-		} else {
+		} else if (memory[ptr] == LOAD0) {
+			ptr++;
+			r0 = memory[ptr];
+		} else if (memory[ptr] == LOAD1) {
+			ptr++;
+			r1 = memory[ptr];
+		}
+		else {
 			printf("Invalid instruction %d at %x\n", memory[ptr], ptr);
 			return 1;
 		}
