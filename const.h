@@ -8,21 +8,21 @@
 // this isn't actually true, but it's right for 99.9999% of the time
 #define MAX_PATH_LENGTH 255
 
-#define STOP 0
-#define R0PP 1
-#define R0MM 2
-#define R1PP 3
-#define R1MM 4
-#define WRITE 5
-#define PRINTASCII 6
+#define STOP 0x0
+#define R0PP 0x1
+#define R0MM 0x2
+#define R1PP 0x3
+#define R1MM 0x4
+#define WRITE 0x5
+#define PRINTASCII 0x6
 
-#define JUMPEQ 7
-#define JUMPNEQ 8
-#define JUMP 9
-#define SWAP0 10
-#define SWAP1 11
+#define JUMPEQ 0x7
+#define JUMPNEQ 0x8
+#define JUMP 0x9
+#define SWAP0 0xA
+#define SWAP1 0xB
 
-#define LINEBREAK 99
+#define LINEBREAK 0xFF
 
 #define NUMBER_TESTS 3
 
