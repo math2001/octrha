@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	if (!failed) {
-		printf("All tests pass! You are awesome!\n")
+		printf("All tests pass! You are awesome!\n");
 	}
 
 	return 0;
