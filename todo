@@ -1,6 +1,6 @@
-implement timeout on run
+implement timeout on run (deadline)
 automatically load tests based on files in folder
-optimize how the program is represented in .prg
+optimize how the program is represented in .prg (memory locations, instead of 0)
 improve jump test!
 
 

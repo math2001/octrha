@@ -202,6 +202,20 @@ int test(char *name, cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 		i++;
 	}
 
+	if (ferror(fp)) {
+		return 2;
+	}
+
+	// there is no more content in the file, ensure that the rest of the
+	// program's output is still 0 as well
+	while (i < OUTPUTSIZE) {
+		if (output[i] != 0) {
+			// the output differs at index i
+			return 10 + i;
+		}
+		i++;
+	}
+
 	fclose(fp);
 	return 0;
 }
