@@ -124,6 +124,14 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE], int debug) {
 			} else {
 				printf("%x", r0);
 			}
+		} else if (memory[ptr] == PRINTBR) {
+			// just a debug feature to quickly insert a line break in the ouput
+			if (output != NULL) {
+				output[outptr] = '\n';
+				outptr++;
+			} else {
+				printf("\n");
+			}
 		// there is a -1 when we jump because the pointer is automatically
 		// increased every loop
 		} else if (memory[ptr] == JUMPEQ) {
@@ -158,14 +166,6 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE], int debug) {
 			ptr++;
 			r1 = memory[memory[ptr]];
 			memory[memory[ptr]] = tmp;
-		} else if (memory[ptr] == LINEBREAK) {
-			// just a debug feature to quickly insert a line break in the ouput
-			if (output != NULL) {
-				output[outptr] = '\n';
-				outptr++;
-			} else {
-				printf("\n");
-			}
 		} else if (memory[ptr] == LOAD0) {
 			ptr++;
 			r0 = memory[ptr];

@@ -16,6 +16,7 @@
 #define WRITE      0x5
 #define PRINTDEC   0x6
 #define PRINTHEX   0x7
+#define PRINTBR    0x8
 
 #define JUMPEQ     0x20
 #define JUMPNEQ    0x21
@@ -24,8 +25,6 @@
 #define SWAP1      0x24
 #define LOAD0      0x25
 #define LOAD1      0x26
-
-#define LINEBREAK  0xFF
 
 #define DEBUG 1
 
