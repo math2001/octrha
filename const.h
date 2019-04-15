@@ -16,13 +16,13 @@
 #define WRITE      0x5
 #define PRINTASCII 0x6
 
-#define JUMPEQ     0x7
-#define JUMPNEQ    0x8
-#define JUMP       0x9
-#define SWAP0      0xA
-#define SWAP1      0xB
-#define LOAD0      0xC
-#define LOAD1      0xD
+#define JUMPEQ     0x20
+#define JUMPNEQ    0x21
+#define JUMP       0x22
+#define SWAP0      0x23
+#define SWAP1      0x24
+#define LOAD0      0x25
+#define LOAD1      0x26
 
 #define LINEBREAK  0xFF
 
