@@ -189,6 +189,8 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE], int debug) {
 // returns 0 if it passes, otherwise a corresponding error code
 // 1 - couldn't load program
 // 2 - couldn't load expected output
+// 3 - invalid instruction
+// 4 - other runtime error
 // >= 10: output differed from index code - 10
 int test(char *name, cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 
@@ -204,7 +206,12 @@ int test(char *name, cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	if (nloaded == -1) {
 		return 1;
 	}
-	run(memory, output, DEBUG);
+	int err = run(memory, output, DEBUG);
+	if (err == 1) {
+		return 3;
+	} else if (err != 0) {
+		return 4;
+	}
 
 	// ensure that the output corresponds to the content in the corresponding
 	// file
@@ -261,6 +268,10 @@ int runAllTests() {
 			printf("Failure to load program for test '%s'\n", tests[i]);
 		} else if (err == 2) {
 			printf("Failure to load expected output for test '%s'\n", tests[i]);
+		} else if (err == 3) {
+			printf("Invalid instruction\n");
+		} else if (err == 4) {
+			printf("Runtime error\n");
 		} else if (err >= 10) {
 			printf("Outputs differ from index %d for test '%s'\n", err - 10, tests[i]);
 			printf("Output from program:\n");
