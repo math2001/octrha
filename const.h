@@ -26,7 +26,7 @@
 
 #define LINEBREAK  0xFF
 
-#define NUMBER_TESTS 5
+#define NUMBER_TESTS 4
 
 #define DEBUG 1
 

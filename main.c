@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #include "const.h"
 
@@ -28,12 +29,9 @@ void printOutput(cell output[OUTPUTSIZE]) {
 
 // loads a program into memory
 // a program is made of lines of 16 instructions
-int loadProg(cell memory[MEMSIZE], char *name) {
-
-	// +1 for the null terminator
-	char path[MAX_PATH_LENGTH + 1];
-
-	snprintf(path, MAX_PATH_LENGTH+1, "./tests/%s.prg", name);
+// return number of bytes loaded if all went well
+// -1 if it couldn't open the file
+int loadProg(cell memory[MEMSIZE], char *path) {
 
 	FILE* fp = fopen(path, "r");
 	if (!fp) {
@@ -46,7 +44,7 @@ int loadProg(cell memory[MEMSIZE], char *name) {
 	int i = 0;
 	char line[50];
 
-	while (fgets(line, 50, fp) != NULL) {
+	while (fgets(line, 50, fp) != NULL && i < MEMSIZE - 16) {
 		sscanf(line, "%hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx",
 			&memory[i+0], &memory[i+1], &memory[i+2], &memory[i+3],
 			&memory[i+4], &memory[i+5], &memory[i+6], &memory[i+7],
@@ -61,7 +59,6 @@ int loadProg(cell memory[MEMSIZE], char *name) {
 	}
 	fclose(fp);
 	return i * 16;
-
 }
 
 // print memory array in rows of 16, in hexadecimal
@@ -80,7 +77,8 @@ void printMemory(cell memory[MEMSIZE]) {
 // returns 0 if all went well
 // 1 - invalid instruction encountered
 // 2 - program should have ended
-int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
+// if output is NULL, write to stdout
+int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE], int debug) {
 	int ptr = 0;
 	int outptr = 0;
 
@@ -95,21 +93,28 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			printf("Program should have ended. No more memory to read from\n");
 			return 2;
 		}
+		// printf("%x %x\n", ptr, memory[ptr]);
 
 		if (memory[ptr] == R0PP) { r0++; }
 		else if (memory[ptr] == R0MM) { r0--; }
 		else if (memory[ptr] == R1PP) { r1++; }
 		else if (memory[ptr] == R1MM) { r1--; }
 		else if (memory[ptr] == WRITE) {
-			output[outptr] = r0;
-			outptr++;
+			if (output != NULL) {
+				output[outptr] = r0;
+				outptr++;
+			} else {
+				printf("%c", r0);
+			}
 		} else if (memory[ptr] == PRINTASCII) {
 			// write the number at the end of the output, making sure it doesn't
 			// overflow
-			int written = snprintf(&output[outptr], OUTPUTSIZE - outptr, "%d", r0);
-			outptr += written;
-
-
+			if (output != NULL) {
+				int written = snprintf(&output[outptr], OUTPUTSIZE - outptr, "%d", r0);
+				outptr += written;
+			} else {
+				printf("%d", r0);
+			}
 		// there is a -1 when we jump because the pointer is automatically
 		// increased every loop
 		} else if (memory[ptr] == JUMPEQ) {
@@ -146,8 +151,12 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			memory[memory[ptr]] = tmp;
 		} else if (memory[ptr] == LINEBREAK) {
 			// just a debug feature to quickly insert a line break in the ouput
-			output[outptr] = '\n';
-			outptr++;
+			if (output != NULL) {
+				output[outptr] = '\n';
+				outptr++;
+			} else {
+				printf("\n");
+			}
 		} else if (memory[ptr] == LOAD0) {
 			ptr++;
 			r0 = memory[ptr];
@@ -160,7 +169,7 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 			return 1;
 		}
 		ptr++;
-		if (DEBUG) 
+		if (debug) 
 			printf("ptr: 0x%x cell: 0x%x r0: %d r1: %d\n", ptr, memory[ptr], r0, r1);
 	}
 
@@ -177,17 +186,19 @@ int test(char *name, cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	if (DEBUG) 
 		printf("Testing '%s'\n", name);
 
-	int nloaded = loadProg(memory, name);
+	// +1 for the null terminator
+	char path[MAX_PATH_LENGTH + 1];
+
+	snprintf(path, MAX_PATH_LENGTH+1, "./tests/%s.prg", name);
+
+	int nloaded = loadProg(memory, path);
 	if (nloaded == -1) {
 		return 1;
 	}
-	run(memory, output);
+	run(memory, output, DEBUG);
 
 	// ensure that the output corresponds to the content in the corresponding
 	// file
-
-	// +1 for the null terminator
-	char path[255];
 
 	snprintf(path, MAX_PATH_LENGTH+1, "./tests/%s.out", name);
 
@@ -224,14 +235,11 @@ int test(char *name, cell memory[MEMSIZE], cell output[OUTPUTSIZE]) {
 	return 0;
 }
 
-int main(int argc, char *argv[]) {
+int runAllTests() {
 	cell memory[MEMSIZE];
 	cell output[OUTPUTSIZE];
 
-	clearMemory(memory);
-	clearOutput(output);
-
-	char *tests[NUMBER_TESTS] = {"2", "jump", "swap", "load", "addition"};
+	char *tests[NUMBER_TESTS] = {"2", "jump", "swap", "load"};
 
 	char failed = 0;
 	for (int i = 0; i < NUMBER_TESTS; i++) {
@@ -255,6 +263,31 @@ int main(int argc, char *argv[]) {
 		printf("All tests pass! You are awesome!\n");
 	} else {
 		printf("%d test(s) failed\n", failed);
+	}
+}
+
+void showUsage() {
+	printf("$ octrha <action>\n");
+	printf("\n");
+	printf("- help: show this help message\n");
+	printf("- test: runs all the tests\n");
+	printf("- other: assume it's a path to a file and run it\n");
+}
+
+int main(int argc, char *argv[]) {
+	if (argc != 2) {
+		printf("Wrong number of arguments: expect exaclty 1\n");
+		showUsage();
+	} else if (strcmp(argv[1], "help") == 0) {
+		showUsage();
+	} else if (strcmp(argv[1], "test") == 0) {
+		runAllTests();
+	} else {
+		cell memory[MEMSIZE];
+
+		clearMemory(memory);
+		loadProg(memory, argv[1]);
+		run(memory, NULL, 0);
 	}
 
 	return 0;
