@@ -106,7 +106,7 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE], int debug) {
 			} else {
 				printf("%c", r0);
 			}
-		} else if (memory[ptr] == PRINTASCII) {
+		} else if (memory[ptr] == PRINTDEC) {
 			// write the number at the end of the output, making sure it doesn't
 			// overflow
 			if (output != NULL) {
@@ -114,6 +114,15 @@ int run(cell memory[MEMSIZE], cell output[OUTPUTSIZE], int debug) {
 				outptr += written;
 			} else {
 				printf("%d", r0);
+			}
+		} else if (memory[ptr] == PRINTHEX) {
+			// write the number at the end of the output, making sure it doesn't
+			// overflow
+			if (output != NULL) {
+				int written = snprintf(&output[outptr], OUTPUTSIZE - outptr, "%x", r0);
+				outptr += written;
+			} else {
+				printf("%x", r0);
 			}
 		// there is a -1 when we jump because the pointer is automatically
 		// increased every loop
@@ -239,7 +248,9 @@ int runAllTests() {
 	cell memory[MEMSIZE];
 	cell output[OUTPUTSIZE];
 
-	char *tests[NUMBER_TESTS] = {"2", "jump", "swap", "load"};
+	#define NUMBER_TESTS 5
+
+	char *tests[NUMBER_TESTS] = {"2", "jump", "swap", "load", "print"};
 
 	char failed = 0;
 	for (int i = 0; i < NUMBER_TESTS; i++) {

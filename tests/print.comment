@@ -1,0 +1,3 @@
+loads 109 in r0
+prints it as a decimal (10) and on a new line, as a hex number (a), and after
+that as a character (m)
