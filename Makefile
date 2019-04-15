@@ -1,4 +1,4 @@
-.PHONY: run
+.PHONY: run install
 
 test: octrha
 	./octrha test
@@ -6,3 +6,5 @@ test: octrha
 octrha: *.h *.c
 	gcc -o octrha main.c
 
+install: octrha
+	cp octrha ~/.local/bin/octrha
